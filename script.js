@@ -1,16 +1,16 @@
-var posInicialX;
-var posInicialY;
+//Variaveis
+    var posInicialX;
+    var posInicialY;
 
-var posFinalX;
-var posFinalY;
+    var posFinalX;
+    var posFinalY;
 
-var bloco;
-var caixa;
+    var bloco;
+    var caixa;
 
-
+//Escutando os mousedown
 var elemento = document.querySelectorAll(".elemento");;
 for (i = 0; i < elemento.length; i++) {
-  // console.log(elemento[i]);
   elemento[i].addEventListener("mousedown", getPosInicial);
 }
 
@@ -37,7 +37,6 @@ for (i = 0; i < elemento.length; i++) {
     PosicaoBlocoY = bloco.getBoundingClientRect();
     PosicaoBlocoY = PosicaoBlocoY.top;
     caixa = event.target.parentNode;
-    // console.log(caixa);
     caixa.removeChild(this);
     console.log("Bloco: " + bloco)
     caixa.appendChild(bloco);
@@ -48,8 +47,6 @@ for (i = 0; i < elemento.length; i++) {
       bloco.style.top = Y ;
       bloco.style.left = X - larguraDaCaixa;
     bloco.style.position = 'absolute';
-    bloco.style.transform = 'translate(' + diferencaX + 'px, ' + diferencaY + 'px) rotate(7deg)';
-    bloco.style.opacity = '0.5';
   }
   function getMouseMove(event){
 
@@ -78,49 +75,44 @@ for (i = 0; i < elemento.length; i++) {
 
 
       if(diferencaX > larguraDaCaixa) {
-        quantidadeDeIrmaos = Math.floor(diferencaX / larguraDaCaixa);
-	      caixaDestino = caixa.nextElementSibling;
-      		for(i=1; i < quantidadeDeIrmaos; i++){
-      			caixaDestino = caixaDestino.nextElementSibling;
-      		}
-      // console.log(caixaDestino);
-      texto = bloco.innerHTML;
-      caixa.removeChild(bloco);
-      var newEl = document.createElement('div');
-      newEl.className = "elemento";
-      // newEl.setAttribute("id", bloco.id);
-      var novo_texto = document.createTextNode(texto);
-      newEl.appendChild(novo_texto);
-      caixaDestino.appendChild(newEl);
+          quantidadeDeIrmaos = Math.floor(diferencaX / larguraDaCaixa);
+  	      caixaDestino = caixa.nextElementSibling;
+        		for(i=1; i < quantidadeDeIrmaos; i++){
+        			caixaDestino = caixaDestino.nextElementSibling;
+        		}
+        // console.log(caixaDestino);
+        texto = bloco.innerHTML;
+        caixa.removeChild(bloco);
+        var newEl = document.createElement('div');
+        newEl.className = "elemento";
+        // newEl.setAttribute("id", bloco.id);
+        var novo_texto = document.createTextNode(texto);
+        newEl.appendChild(novo_texto);
+        caixaDestino.appendChild(newEl);
 
-      els = caixaDestino.querySelectorAll(".elemento");
-      console.log(els[0])
-      console.log(els.length);
-          verificacao = false;
-      for(i=0; i < els.length; i++) {
-        PosicaoY = els[i].getBoundingClientRect();
-        PosicaoY = PosicaoY.top;
-        nextPosicaoY = 0;
-        if(els[i + 1]) {
-          nextPosicaoY = els[i + 1].getBoundingClientRect();
-          nextPosicaoY = nextPosicaoY.top;
-        }
-        console.log("posFinalY"+ posFinalY + "PosicaoY" + PosicaoY)
-        if(posFinalY < PosicaoY) {
-            if(verificacao == false) {
-            caixaDestino.insertBefore(newEl, els[i]);
-            verificacao = true;
+        els = caixaDestino.querySelectorAll(".elemento");
+        console.log(els[0])
+        console.log(els.length);
+            verificacao = false;
+        for(i=0; i < els.length; i++) {
+          PosicaoY = els[i].getBoundingClientRect();
+          PosicaoY = PosicaoY.top;
+          nextPosicaoY = 0;
+          if(els[i + 1]) {
+            nextPosicaoY = els[i + 1].getBoundingClientRect();
+            nextPosicaoY = nextPosicaoY.top;
+          }
+          console.log("posFinalY"+ posFinalY + "PosicaoY" + PosicaoY)
+          if(posFinalY < PosicaoY) {
+              if(verificacao == false) {
+              caixaDestino.insertBefore(newEl, els[i]);
+              verificacao = true;
+            }
           }
         }
+        recriaListener();
       }
-
-
-
-
-
-      recriaListener();
-    }
-    else if(diferencaX < -larguraDaCaixa) {
+      else if(diferencaX < -larguraDaCaixa) {
         quantidadeDeIrmaos = Math.floor(diferencaX / -larguraDaCaixa);
   	    caixaDestino = caixa.previousElementSibling;
       		for(i=1; i < quantidadeDeIrmaos; i++){
@@ -159,49 +151,44 @@ for (i = 0; i < elemento.length; i++) {
 
 
          recriaListener();
-   }
+      }
+      else {
+        caixaDestino = caixa;
+        texto = bloco.innerHTML;
+        caixa.removeChild(bloco);
+        var newEl = document.createElement('div');
+        newEl.className = "elemento";
+        var novo_texto = document.createTextNode(texto);
+        newEl.appendChild(novo_texto);
+        caixaDestino.appendChild(newEl);
 
-   else {
-     caixaDestino = caixa;
-      texto = bloco.innerHTML;
-      caixa.removeChild(bloco);
-      var newEl = document.createElement('div');
-      newEl.className = "elemento";
-      var novo_texto = document.createTextNode(texto);
-      newEl.appendChild(novo_texto);
-      caixaDestino.appendChild(newEl);
+        els = caixaDestino.querySelectorAll(".elemento");
+        console.log(els[0])
+        console.log(els.length);
 
-      els = caixaDestino.querySelectorAll(".elemento");
-      console.log(els[0])
-      console.log(els.length);
+            verificacao = false;
+        for(i=0; i < els.length; i++) {
+          PosicaoY = els[i].getBoundingClientRect();
+          PosicaoY = PosicaoY.top;
 
-          verificacao = false;
-      for(i=0; i < els.length; i++) {
-        PosicaoY = els[i].getBoundingClientRect();
-        PosicaoY = PosicaoY.top;
+          console.log("posFinalY"+ posFinalY + "PosicaoY" + PosicaoY)
 
-        console.log("posFinalY"+ posFinalY + "PosicaoY" + PosicaoY)
-
-        if(posFinalY < PosicaoY) {
-            if(verificacao == false) {
-            caixaDestino.insertBefore(newEl, els[i]);
-            verificacao = true;
+          if(posFinalY < PosicaoY) {
+              if(verificacao == false) {
+              caixaDestino.insertBefore(newEl, els[i]);
+              verificacao = true;
+            }
           }
         }
-      }
 
 
-      recriaListener();
-   }
+        recriaListener();
+     }
 
 
   container.style.cursor = 'default';
-
-  // function organizar() {
-  //   for(i=0; i < caixaDestino.length)
-  // }
-
 }
+
 function recriaListener(){
   var elemento = document.querySelectorAll(".elemento");
   for (i = 0; i < elemento.length; i++) {
