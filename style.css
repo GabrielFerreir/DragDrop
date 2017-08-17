@@ -30,7 +30,7 @@ body {
 }
 
 .caixa {
-  width: 20%;
+  min-width: 25vw;
   height: 600px;
   overflow-y: auto;
   border-radius: 3px;
@@ -70,4 +70,16 @@ body {
   cursor: move; user-select: none;
   text-align: center;
   font-size: 14px;
+}
+.sombra {
+  width: 90%;
+  height: 35px;
+  background-color: transparent;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0, 0.14),
+              0 4px 5px 0 rgba(0,0,0,0.12),
+              0 1px 10px 0 rgba(0, 0, 0, 0.20);
+  margin-left: 5%;
+  margin-top: 5px;
+  cursor: move; user-select: none;
 }

@@ -7,6 +7,14 @@
 
     var bloco;
     var caixa;
+    var sombra;
+    var sombraX = null;
+    var sombraY = null;
+    var clicou = false;
+
+    var caixaDaSombra;
+
+
 
 //Escutando os mousedown
 var elemento = document.querySelectorAll(".elemento");;
@@ -26,168 +34,119 @@ for (i = 0; i < elemento.length; i++) {
 
 
   function getPosInicial(event) {
-    X = event.clientX;
-    Y = event.clientY;
-    console.log("X:"+X+" " + "Y:"+Y)
-    posInicialX = X;
-    posInicialY = Y;
-    bloco = this;
-    PosicaoBlocoX = bloco.getBoundingClientRect();
-    PosicaoBlocoX = PosicaoBlocoX.left;
-    PosicaoBlocoY = bloco.getBoundingClientRect();
-    PosicaoBlocoY = PosicaoBlocoY.top;
-    caixa = event.target.parentNode;
-    caixa.removeChild(this);
-    console.log("Bloco: " + bloco)
-    caixa.appendChild(bloco);
 
+      posInicialX = event.clientX;
+      posInicialY = event.clientY;
+      bloco = this;
 
-    container.style.cursor = 'move';
-      bloco.style.width = larguraDaCaixa;
-      bloco.style.top = Y ;
-      bloco.style.left = X - larguraDaCaixa;
-    bloco.style.position = 'absolute';
-  }
+      PosicaoBlocoX = bloco.getBoundingClientRect().left;
+      PosicaoBlocoY = bloco.getBoundingClientRect().top;
+
+      caixa = event.target.parentNode;
+
+        container.style.cursor = 'move';
+
+        sombra = document.createElement('div');
+        sombra.className = "sombra";
+    }
+
   function getMouseMove(event){
+
+    // scroll(event.clientX);
 
     diferencaX = event.clientX - posInicialX;
     diferencaY = event.clientY - posInicialY;
-    if(diferencaX && diferencaY && bloco){
 
+    if(posInicialX){
       bloco.style.transform = 'translate(' + diferencaX + 'px, ' + diferencaY + 'px) rotate(7deg)';
       bloco.style.opacity = '0.5';
+      bloco.style.position = 'absolute';
+      bloco.style.width = larguraDaCaixa;
+      bloco.style.top = posInicialY - bloco.clientHeight;
+      bloco.style.left = posInicialX - larguraDaCaixa;
+
+
+
+      // if(caixaDestino() == caixa) {
+          if(pegaLocalNaOrdem()) {
+            caixaDestino().insertBefore(sombra, pegaLocalNaOrdem());
+          } else {
+            caixaDestino().appendChild(sombra);
+          }
+      // } else {
+      //   caixaDestino().appendChild(sombra);
+      // }
+
+      clicou = true;
   }
 }
 
   function getPosFinal(event) {
-    if(bloco){
-      bloco.style.transform = '';
-      bloco.style.opacity = '1';
-    }
 
-    posFinalX = event.clientX;
-    posFinalY = event.clientY;
-    console.log("posInicial: " + posInicialX + " " +posInicialY);
-    console.log("posFinal: " + posFinalX + " " + posFinalY);
-    console.log("Diferença X: " + (diferencaX = posFinalX - posInicialX));
-    console.log("Diferença Y: " + (diferencaY = posFinalY - posInicialY));
-
-
-
-      if(diferencaX > larguraDaCaixa) {
-          quantidadeDeIrmaos = Math.floor(diferencaX / larguraDaCaixa);
-  	      caixaDestino = caixa.nextElementSibling;
-        		for(i=1; i < quantidadeDeIrmaos; i++){
-        			caixaDestino = caixaDestino.nextElementSibling;
-        		}
-        // console.log(caixaDestino);
-        texto = bloco.innerHTML;
-        caixa.removeChild(bloco);
-        var newEl = document.createElement('div');
-        newEl.className = "elemento";
-        // newEl.setAttribute("id", bloco.id);
-        var novo_texto = document.createTextNode(texto);
-        newEl.appendChild(novo_texto);
-        caixaDestino.appendChild(newEl);
-
-        els = caixaDestino.querySelectorAll(".elemento");
-        console.log(els[0])
-        console.log(els.length);
-            verificacao = false;
-        for(i=0; i < els.length; i++) {
-          PosicaoY = els[i].getBoundingClientRect();
-          PosicaoY = PosicaoY.top;
-          nextPosicaoY = 0;
-          if(els[i + 1]) {
-            nextPosicaoY = els[i + 1].getBoundingClientRect();
-            nextPosicaoY = nextPosicaoY.top;
-          }
-          console.log("posFinalY"+ posFinalY + "PosicaoY" + PosicaoY)
-          if(posFinalY < PosicaoY) {
-              if(verificacao == false) {
-              caixaDestino.insertBefore(newEl, els[i]);
-              verificacao = true;
+            if(clicou) {
+              caixaDestino().removeChild(sombra);
+              caixa.removeChild(bloco);
+              if(pegaLocalNaOrdem()){
+                  caixaDestino().insertBefore(bloco, pegaLocalNaOrdem());
+              } else {
+                  caixaDestino().appendChild(bloco);
+              }
+              bloco.style = '';
             }
+            reset();
+            recriaListener();
+}
+
+function caixaDestino() {
+      if(diferencaX && diferencaX > larguraDaCaixa) {
+        quantidadeDeIrmaos = Math.floor(diferencaX / larguraDaCaixa);
+        cxDestino = caixa.nextElementSibling;
+          for(i=1; i < quantidadeDeIrmaos; i++){
+            cxDestino = cxDestino.nextElementSibling;
           }
-        }
-        recriaListener();
       }
-      else if(diferencaX < -larguraDaCaixa) {
+      else if(diferencaX && diferencaX < -larguraDaCaixa) {
         quantidadeDeIrmaos = Math.floor(diferencaX / -larguraDaCaixa);
-  	    caixaDestino = caixa.previousElementSibling;
-      		for(i=1; i < quantidadeDeIrmaos; i++){
-      		    caixaDestino = caixaDestino.previousElementSibling
-      	 }
-         console.log(caixaDestino)
-         texto = bloco.innerHTML;
-         caixa.removeChild(bloco);
-         var newEl = document.createElement('div');
-         newEl.className = "elemento";
-        //  newEl.setAttribute("id", bloco.id);
-         var novo_texto = document.createTextNode(texto);
-         newEl.appendChild(novo_texto);
-         caixaDestino.appendChild(newEl);
-
-         els = caixaDestino.querySelectorAll(".elemento");
-         console.log(els[0])
-         console.log(els.length);
-             verificacao = false;
-         for(i=0; i < els.length; i++) {
-           PosicaoY = els[i].getBoundingClientRect();
-           PosicaoY = PosicaoY.top;
-           nextPosicaoY = 0;
-           if(els[i + 1]) {
-             nextPosicaoY = els[i + 1].getBoundingClientRect();
-             nextPosicaoY = nextPosicaoY.top;
+        cxDestino = caixa.previousElementSibling;
+            for(i=1; i < quantidadeDeIrmaos; i++){
+                cxDestino = cxDestino.previousElementSibling
            }
-           console.log("posFinalY"+ posFinalY + "PosicaoY" + PosicaoY)
-           if(posFinalY < PosicaoY) {
-               if(verificacao == false) {
-               caixaDestino.insertBefore(newEl, els[i]);
-               verificacao = true;
-             }
-           }
-         }
-
-
-         recriaListener();
       }
       else {
-        caixaDestino = caixa;
-        texto = bloco.innerHTML;
-        caixa.removeChild(bloco);
-        var newEl = document.createElement('div');
-        newEl.className = "elemento";
-        var novo_texto = document.createTextNode(texto);
-        newEl.appendChild(novo_texto);
-        caixaDestino.appendChild(newEl);
+        cxDestino = caixa;
+      }
+      return cxDestino;
+}
 
-        els = caixaDestino.querySelectorAll(".elemento");
-        console.log(els[0])
-        console.log(els.length);
+function pegaLocalNaOrdem(){
+  // posFinalY = bloco.getBoundingClientRect().top;
+  // posFinalX = bloco.getBoundingClientRect().left;
 
-            verificacao = false;
-        for(i=0; i < els.length; i++) {
-          PosicaoY = els[i].getBoundingClientRect();
-          PosicaoY = PosicaoY.top;
+  posFinalY = event.clientY - 40;
 
-          console.log("posFinalY"+ posFinalY + "PosicaoY" + PosicaoY)
+  // console.log("Y: " + posFinalY );
 
-          if(posFinalY < PosicaoY) {
+      els = caixaDestino().querySelectorAll(".elemento");
+      verificacao = false;
+      local = null;
+      for(i=0; i < els.length; i++) {
+          PosicaoY = els[i].getBoundingClientRect().top;
+          if(posFinalY < PosicaoY && bloco !== els[i]) {
               if(verificacao == false) {
-              caixaDestino.insertBefore(newEl, els[i]);
-              verificacao = true;
+                  verificacao = true;
+                  local = els[i];
             }
           }
-        }
+      }
+      console.log('---END---')
 
-
-        recriaListener();
-     }
-
-
-  container.style.cursor = 'default';
+      return local;
 }
+
+
+
+
+
 
 function recriaListener(){
   var elemento = document.querySelectorAll(".elemento");
@@ -197,15 +156,39 @@ function recriaListener(){
   }
 }
 
-
-
+// function scroll(mouse){
+//   tamanhoDaTela = window.innerWidth;
+//   areaDeScroll = tamanhoDaTela * 0.1;
+//
+//
+//   console.log(tamanhoDaTela, areaDeScroll);
+//
+//   if(mouse > tamanhoDaTela - areaDeScroll) {
+//       window.scrollBy(20, 0);
+//       console.log("Right");
+//   }
+//   if(areaDeScroll > mouse) {
+//     window.scrollBy(-20, 0);
+//     console.log("left");
+//   }
+// }
 
 function reset(){
   posInicialX = 0;
   posInicialY = 0;
 
+  PosicaoBlocoX = 0;
+  PosicaoBlocoY = 0;
+
   posFinalX = 0;
   posFinalY = 0;
   bloco = null;
   caixa = null
+  diferencaX = 0;
+  diferencaY = 0;
+  sombra = null;
+  sombraX = null;
+  sombraY = null;
+  mexeu = false;
+  clicou = false;
 }
