@@ -12,30 +12,76 @@
     var sombraY = null;
     var clicou = false;
 
+    var localScroll;
+
     var caixaDaSombra;
 
 
+//Pegar container
+var container  = document.getElementById("container");
 
-//Escutando os mousedown
+////Escutando click nos addCaixa e Adicionando Caixas
+var addCaixa = document.querySelector(".addCaixa");
+  addCaixa.addEventListener("click", function(){
+    novaCaixa = document.createElement('div');
+    novaCaixa.className = "caixa";
+    var tituloDaCaixa = prompt('Digite o titulo');
+    if(titulo){
+      novaCaixa.innerHTML =  '<header><div>'+tituloDaCaixa+'<i class="material-icons">&#xE254;</i></div></header><div class="addElemento">Adicionar elemento</div>'
+  ;
+
+
+      this.parentNode.insertBefore(novaCaixa, this.parentNode.querySelector(".addCaixa"));
+      escutaEAdicionaElementos();
+    }
+
+
+  });
+
+
+//Escutando click nos addElemento e Adicionando Elementos
+escutaEAdicionaElementos();
+function escutaEAdicionaElementos(){
+  var addElemento = document.querySelectorAll(".addElemento");
+  console.log(addElemento);
+  for (i = 0; i < addElemento.length; i++) {
+    addElemento[i].addEventListener("click", function(){
+      // console.log(this.parentNode);
+      novoElemento = document.createElement('div');
+      novoElemento.className = "elemento";
+      var conteudo = prompt('Digite o conteudo');
+      if(conteudo){
+        novoElemento.innerHTML = conteudo;
+        this.parentNode.insertBefore(novoElemento, this.parentNode.querySelector(".addElemento"));
+        conteudo = null;
+      }
+
+    });
+  }
+}
+
+
+
+//Escutando os mousedown nos elementos
 var elemento = document.querySelectorAll(".elemento");;
 for (i = 0; i < elemento.length; i++) {
   elemento[i].addEventListener("mousedown", getPosInicial);
 }
-
-  var container  = document.getElementById("container");
-
-  container.addEventListener("mouseup", getPosFinal);
+//MouseMove e Up
   container.addEventListener("mousemove", getMouseMove);
+  container.addEventListener("mouseup", getPosFinal);
+
+//larguraDaCaixa
   larguraDaCaixa = document.getElementsByClassName('caixa')[0].clientWidth;
   larguraDaCaixa = larguraDaCaixa - (larguraDaCaixa * 0.1);
   console.log(larguraDaCaixa);
-  alturaDoElemento =  document.getElementsByClassName('elemento')[0].clientHeight;
-  console.log(alturaDoElemento);
+// //AlturaDoElemento
+// alturaDoElemento =  document.getElementsByClassName('elemento')[0].clientHeight;
+// console.log(alturaDoElemento);
 
 
   function getPosInicial(event) {
-
-      posInicialX = event.clientX;
+      posInicialX = event.clientX + getScroll();
       posInicialY = event.clientY;
       bloco = this;
 
@@ -52,12 +98,19 @@ for (i = 0; i < elemento.length; i++) {
 
   function getMouseMove(event){
 
-    // scroll(event.clientX);
-
-    diferencaX = event.clientX - posInicialX;
-    diferencaY = event.clientY - posInicialY;
-
     if(posInicialX){
+      // console.log(event.clientX);
+      fazScroll(event.clientX);
+      // console.log(-localScroll.left);
+      diferencaX = (event.clientX )  - posInicialX;
+      if(getScroll()) {
+        diferencaX = (event.clientX + (getScroll())) - posInicialX;
+        console.log('------------')
+        console.log(diferencaX);
+      }
+      diferencaY = event.clientY - posInicialY;
+
+
       bloco.style.transform = 'translate(' + diferencaX + 'px, ' + diferencaY + 'px) rotate(7deg)';
       bloco.style.opacity = '0.5';
       bloco.style.position = 'absolute';
@@ -65,22 +118,15 @@ for (i = 0; i < elemento.length; i++) {
       bloco.style.top = posInicialY - bloco.clientHeight;
       bloco.style.left = posInicialX - larguraDaCaixa;
 
-
-
-      // if(caixaDestino() == caixa) {
           if(pegaLocalNaOrdem()) {
             caixaDestino().insertBefore(sombra, pegaLocalNaOrdem());
           } else {
-            caixaDestino().appendChild(sombra);
+            caixaDestino().insertBefore(sombra, caixaDestino().querySelector(".addElemento"));
           }
-      // } else {
-      //   caixaDestino().appendChild(sombra);
-      // }
 
       clicou = true;
   }
 }
-
   function getPosFinal(event) {
 
             if(clicou) {
@@ -89,7 +135,7 @@ for (i = 0; i < elemento.length; i++) {
               if(pegaLocalNaOrdem()){
                   caixaDestino().insertBefore(bloco, pegaLocalNaOrdem());
               } else {
-                  caixaDestino().appendChild(bloco);
+                  caixaDestino().insertBefore(bloco, caixaDestino().querySelector(".addElemento"));
               }
               bloco.style = '';
             }
@@ -127,6 +173,7 @@ function pegaLocalNaOrdem(){
   // console.log("Y: " + posFinalY );
 
       els = caixaDestino().querySelectorAll(".elemento");
+      // console.log(els);
       verificacao = false;
       local = null;
       for(i=0; i < els.length; i++) {
@@ -138,15 +185,18 @@ function pegaLocalNaOrdem(){
             }
           }
       }
-      console.log('---END---')
-
+      if( els && els.length == 0) {
+        // console.log('Entrou Aqui []')
+        local = null;
+      }
+      // if(local == null) {
+      //   local = els[els.lenght];
+      //   console.log(local)
+      //   console.log('Entrou Aqui')
+      // }
+      // console.log('---END---')
       return local;
 }
-
-
-
-
-
 
 function recriaListener(){
   var elemento = document.querySelectorAll(".elemento");
@@ -156,22 +206,23 @@ function recriaListener(){
   }
 }
 
-// function scroll(mouse){
-//   tamanhoDaTela = window.innerWidth;
-//   areaDeScroll = tamanhoDaTela * 0.1;
-//
-//
-//   console.log(tamanhoDaTela, areaDeScroll);
-//
-//   if(mouse > tamanhoDaTela - areaDeScroll) {
-//       window.scrollBy(20, 0);
-//       console.log("Right");
-//   }
-//   if(areaDeScroll > mouse) {
-//     window.scrollBy(-20, 0);
-//     console.log("left");
-//   }
-// }
+function fazScroll(mouse){
+  tamanhoDaTela = window.innerWidth;
+  areaDeScroll = tamanhoDaTela * 0.1;
+
+  if(mouse > tamanhoDaTela - areaDeScroll) {
+      window.scrollBy(20, 0);
+      console.log('Right')
+  }
+  if(areaDeScroll > mouse) {
+    window.scrollBy(-20, 0);
+    console.log('Left')
+  }
+}
+function getScroll(){
+    var scroll = container.getBoundingClientRect().left;
+    return -scroll;
+}
 
 function reset(){
   posInicialX = 0;
